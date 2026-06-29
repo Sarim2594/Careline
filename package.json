@@ -2,7 +2,7 @@
   "name": "careline-deployment",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && npm install && chmod +x node_modules/.bin/react-scripts && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
