@@ -73,17 +73,21 @@ app.use((err, req, res, next) => {
 const PORT = process.env.APP_PORT || 5000;
 const HOST = process.env.APP_HOST || '0.0.0.0';
 
-async function startServer() {
-  setInterval(checkAndSendLateReminders, 10 * 60 * 1000);
-  setTimeout(checkAndSendLateReminders, 30 * 1000);
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  async function startServer() {
+    setInterval(checkAndSendLateReminders, 10 * 60 * 1000);
+    setTimeout(checkAndSendLateReminders, 30 * 1000);
 
-  app.listen(PORT, HOST, () => {
-    console.log(`\nCareLine API running at http://${HOST}:${PORT}`);
-    console.log(`React frontend should run on http://localhost:3000\n`);
+    app.listen(PORT, HOST, () => {
+      console.log(`\nCareLine API running at http://${HOST}:${PORT}`);
+      console.log(`React frontend should run on http://localhost:3000\n`);
+    });
+  }
+
+  startServer().catch((err) => {
+    console.error('Failed to start server', err);
+    process.exit(1);
   });
 }
-
-startServer().catch((err) => {
-  console.error('Failed to start server', err);
-  process.exit(1);
-});

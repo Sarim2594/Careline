@@ -1,11 +1,31 @@
-# CareLine — React + Node.js/Express Migration
+# CareLine E-Clinic Management System
 
-## Quick Start
+CareLine is a comprehensive, role-based e-clinic management system designed to streamline the operations of medical clinics. Built with a modern tech stack (React, Node.js/Express, PostgreSQL) and containerized with Docker, CareLine provides a secure and scalable solution for managing clinic staff, patients, and communications.
 
-### Local Development
+## 🌟 Features
 
-### 1. Configure database — edit `backend/.env`:
-```
+- **Role-Based Access Control (RBAC):** Distinct dashboards and permissions for various roles:
+  - **Superadmin:** Oversees system-wide settings, regions, and high-level management.
+  - **Admin:** Manages specific clinic operations, staff, and local settings.
+  - **Doctor:** Accesses patient diagnoses, and manages appointments.
+  - **Receptionist:** Handles patient intake, scheduling, and general inquiries.
+- **Clinic & Region Management:** Organize and manage multiple clinic branches across different regions.
+- **Bulletins & Notifications:** Integrated communication system to keep staff informed via internal bulletins and real-time notifications.
+- **Email Integration:** Send diagnoses and important updates directly to patients via email (powered by Nodemailer).
+- **Secure Authentication:** Robust user authentication and password hashing using bcrypt.
+
+## 🛠️ Technology Stack
+
+- **Frontend:** React.js, React Router, Axios
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL (with `node-pg-migrate` for schema migrations)
+- **Containerization:** Docker & Docker Compose
+
+## 🚀 Quick Start (Local Development)
+
+### 1. Database Configuration
+Create or edit the `backend/.env` file:
+```env
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=careline
@@ -14,112 +34,74 @@ DB_PASSWORD=your_password_here
 APP_PORT=5000
 ```
 
-### 2. Initialize the normalized database:
+### 2. Initialize the Database
+Install backend dependencies and run the database initialization (this resets, migrates, and seeds the database):
 ```bash
-cd backend && npm install && npm run db:init
+cd backend
+npm install
+npm run db:init
 ```
 
-### 3. Start backend:
+### 3. Start the Backend Server
 ```bash
-cd backend && npm install && npm run dev
+cd backend
+npm run dev
 ```
-Runs on **http://localhost:5000**
+The API will be available at **http://localhost:5000**.
 
-### 4. Start frontend:
+### 4. Start the Frontend Application
 ```bash
-cd frontend && npm install && npm start
+cd frontend
+npm install
+npm start
 ```
-Runs on **http://localhost:3000**
+The React app will be available at **http://localhost:3000**.
 
-## Docker Deployment
+## 🐳 Docker Deployment
+
+CareLine is fully containerized, making deployment straightforward on any VPS or local machine with Docker installed.
 
 ### Prerequisites
-- Docker and Docker Compose installed on your VPS
+- Docker and Docker Compose installed.
 
 ### Deployment Steps
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd careline-management-system
+   ```
 
-1. **Clone the repository** on your VPS:
-```bash
-git clone <your-repo-url>
-cd careline-management-system
-```
+2. **Build and start the containers:**
+   ```bash
+   docker-compose up -d --build
+   ```
 
-2. **Build and start the containers**:
-```bash
-docker-compose up -d --build
-```
+3. **Initialize the schema and demo data:**
+   ```bash
+   docker-compose run --rm backend npm run db:init
+   ```
 
-3. **Initialize the schema and demo data**:
-```bash
-docker compose run --rm backend npm run db:init
-```
+4. **Access the Application:**
+   - **Frontend:** `http://localhost` (or your VPS IP on port 80)
+   - **Backend API:** `http://localhost:5000`
+   - **Database:** Internal port 5432
 
-4. **Check if services are running**:
-```bash
-docker-compose ps
-```
+### Managing Docker Containers
+- **View logs:** `docker-compose logs -f`
+- **Check status:** `docker-compose ps`
+- **Stop application:** `docker-compose down`
+- **Update application:** `git pull` then `docker-compose up -d --build`
 
-5. **View logs** (if needed):
-```bash
-docker-compose logs -f
-```
+## 🔑 Demo Credentials
 
-### Access the Application
-- Frontend: http://your-vps-ip
-- Backend API: http://your-vps-ip:5000
-- Database: Accessible internally on port 5432
+Use the following credentials to explore the different role-based views (seeded automatically via `npm run db:init`):
 
-### Environment Variables
-The current Docker setup uses:
-- Database: `careline`
-- User: `sarim`
-- Password: `${DB_PASSWORD}` from the root `.env`
-
-For production, consider using Docker secrets or environment files.
-
-### Stopping the Application
-```bash
-docker-compose down
-```
-
-### Updating the Application
-```bash
-git pull
-docker-compose up -d --build
-```
-
-## Demo Credentials
 | Role | Username | Password |
 |------|----------|----------|
-| Superadmin | `muhammad.yasir` | `super123` |
-| Admin | `sarim.khan` | `admin123` |
-| Doctor | `ahmed.ali` | `doc123` |
-| Receptionist | `kamran.akmal` | `recep123` |
+| **Superadmin** | `muhammad.yasir` | `super123` |
+| **Admin** | `sarim.khan` | `admin123` |
+| **Doctor** | `ahmed.ali` | `doc123` |
+| **Receptionist** | `kamran.akmal` | `recep123` |
 
-The database now comes from the migration in `backend/migrations/001_initial_redesign.js`
-and the reset/seed scripts in `backend/scripts/`.
-
-## What Was Migrated
-- `main.py` → `backend/server.js`
-- `database.py` → `backend/db.js`
-- `src/auth/` → `backend/routes/auth.js`
-- `src/admin/` → `backend/routes/admin.js`
-- `src/doctor/` → `backend/routes/doctor.js`
-- `src/receptionist/` → `backend/routes/receptionist.js`
-- `src/superadmin/` → `backend/routes/superadmin.js`
-- `src/bulletins/` → `backend/routes/bulletins.js`
-- `src/notifications/` → `backend/routes/notifications.js`
-- `src/core/` → `backend/routes/clinics.js` + `regions.js`
-- `templates/index.html` → `frontend/src/pages/Login.jsx`
-- `templates/admin.html` → `frontend/src/pages/Admin.jsx`
-- `templates/doctor.html` → `frontend/src/pages/Doctor.jsx`
-- `templates/receptionist.html` → `frontend/src/pages/Receptionist.jsx`
-- `templates/superadmin.html` → `frontend/src/pages/Superadmin.jsx`
-- `static/user_state.js` → `frontend/src/context/AuthContext.jsx`
-- `static/notifications.js` → `frontend/src/components/NotificationBell.jsx`
-- All fetch() calls → `frontend/src/api/index.js`
-
-## Note on Email
-The `/api/receptionist/email-diagnosis` endpoint is stubbed.
-To enable it, install nodemailer (`npm install nodemailer`) and
-configure SMTP in `backend/routes/receptionist.js`.
+## 📧 Note on Email Configuration
+The `/api/receptionist/email-diagnosis` endpoint uses Nodemailer. To enable real email delivery, configure your SMTP server credentials within `backend/routes/receptionist.js`.

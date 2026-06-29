@@ -16,8 +16,9 @@ if (process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER) {
   poolConfig.password = process.env.DB_PASSWORD;
   poolConfig.ssl = false;
 } else {
-  poolConfig.connectionString = process.env.DATABASE_URL;
-  if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('sslmode=require')) {
+  const connString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  poolConfig.connectionString = connString;
+  if (connString && !connString.includes('sslmode=require')) {
     poolConfig.ssl = false;
   } else {
     poolConfig.ssl = { rejectUnauthorized: false };
